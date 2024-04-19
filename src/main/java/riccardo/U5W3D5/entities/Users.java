@@ -1,7 +1,11 @@
 package riccardo.U5W3D5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import riccardo.U5W3D5.enums.Role;
 
 import java.util.*;
@@ -12,7 +16,8 @@ import java.util.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Users {
+@JsonIgnoreProperties({"password", "role", "authorities", "credentialsNonExpired", "accountNonExpired", "accountNonLocked", "enabled"})
+public class Users implements UserDetails {
     @Id
     @GeneratedValue
     @Setter (AccessLevel.NONE)
@@ -49,4 +54,28 @@ public class Users {
     }
 
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

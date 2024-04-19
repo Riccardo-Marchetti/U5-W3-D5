@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import riccardo.U5W3D5.entities.Users;
 import riccardo.U5W3D5.exceptions.BadRequestException;
@@ -20,6 +21,8 @@ public class UsersService {
 
     @Autowired
     private UsersDAO usersDAO;
+    @Autowired
+    private PasswordEncoder bcrypt;
 
     public Page<Users> getAllUser (int page, int size, String sortBy){
         if (size > 50) size = 50;
@@ -37,7 +40,7 @@ public class UsersService {
                     throw new BadRequestException("l'email: " + body.email() + " è gia in uso");
                 }
         );
-        Users users = new Users(body.username(), body.name(), body.surname(), body.email(), body.password(), body.role());
+        Users users = new Users(body.username(), body.name(), body.surname(),  body.email(), bcrypt.encode(body.password()), body.role());
         users.setAvatar("https://ui-avatars.com/api/?name=" + body.name() + "+" + body.surname());
         return this.usersDAO.save(users);
     }
@@ -48,7 +51,7 @@ public class UsersService {
         users.setName(body.name());
         users.setSurname(body.surname());
         users.setEmail(body.email());
-        users.setPassword(body.password());
+        users.setPassword(bcrypt.encode(body.password()));
         users.setAvatar("https://ui-avatars.com/api/?name=" + body.name() + "+" + body.surname());
         return this.usersDAO.save(users);
     }

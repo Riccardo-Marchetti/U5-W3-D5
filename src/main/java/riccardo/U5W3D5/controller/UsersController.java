@@ -3,6 +3,8 @@ package riccardo.U5W3D5.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,25 @@ public class UsersController {
     private UsersService usersService;
 
     @GetMapping
-    private Page<Users> getAllUser (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
+    public Page<Users> getAllUser (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
         return usersService.getAllUser(page, size, sortBy);
+    }
+
+    @GetMapping ("/me")
+    public Users getUser (@PathVariable Users currentUser){
+        return currentUser;
+    }
+
+    @PutMapping ("/me")
+    public Users updateProfile (@RequestBody @Validated UsersDTO body, @AuthenticationPrincipal Users currentUser ){
+        return this.usersService.findUserAndUpdate( body, currentUser.getId());
+    }
+
+    @DeleteMapping ("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProfile (@AuthenticationPrincipal Users currentUser){
+        this.usersService.deleteUser(currentUser.getId());
     }
 
     @GetMapping ("/{userId}")
@@ -33,25 +52,18 @@ public class UsersController {
         return usersService.getUserById(userId);
     }
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    private Users saveUser (@RequestBody @Validated UsersDTO body, BindingResult validation){
-//        if (validation.hasErrors()){
-//            throw new BadRequestException(validation.getAllErrors());
-//        }
-//        return usersService.saveUser(body);
-//    }
-
     @PutMapping ("/{userId}")
-    private Users findUserAndUpdate (@PathVariable UUID userId, @RequestBody @Validated UsersDTO body, BindingResult validation ){
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
+    public Users findUserAndUpdate (@PathVariable UUID userId, @RequestBody @Validated UsersDTO body, BindingResult validation ){
         if (validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
         }
         return usersService.findUserAndUpdate(body, userId);
     }
     @DeleteMapping ("/{userId}")
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
     @ResponseStatus (HttpStatus.NO_CONTENT)
-    private void deleteUser (@PathVariable UUID userId){
+    public void deleteUser (@PathVariable UUID userId){
         this.usersService.deleteUser(userId);
     }
 }

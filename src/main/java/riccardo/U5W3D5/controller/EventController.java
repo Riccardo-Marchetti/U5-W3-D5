@@ -3,6 +3,7 @@ package riccardo.U5W3D5.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    private Page<Event> getAllEvent (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
+    public Page<Event> getAllEvent (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
         return this.eventService.getAllEvent(page, size, sortBy);
     }
 
@@ -33,7 +34,8 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus (HttpStatus.CREATED)
-    private Event saveEvent (@RequestBody @Validated EventDTO body, BindingResult validation){
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
+    public Event saveEvent (@RequestBody @Validated EventDTO body, BindingResult validation){
         if (validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
         }
@@ -41,15 +43,17 @@ public class EventController {
     }
 
     @PutMapping ("/{eventId}")
-    private Event findEventAndUpdate (@PathVariable UUID eventId, @RequestBody @Validated EventDTO body, BindingResult validation ){
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
+    public Event findEventAndUpdate (@PathVariable UUID eventId, @RequestBody @Validated EventDTO body, BindingResult validation ){
         if (validation.hasErrors()){
             throw new BadRequestException(validation.getAllErrors());
         }
         return this.eventService.findEventAndUpdate(body, eventId);
     }
     @DeleteMapping ("/{eventId}")
+    @PreAuthorize("hasAuthority('EVENT_ORGANIZER')")
     @ResponseStatus (HttpStatus.NO_CONTENT)
-    private void deleteEvent (@PathVariable UUID eventId){
+    public void deleteEvent (@PathVariable UUID eventId){
         this.eventService.deleteEvent(eventId);
     }
 

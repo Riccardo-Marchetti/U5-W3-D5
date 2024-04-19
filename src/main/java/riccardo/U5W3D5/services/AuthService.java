@@ -1,6 +1,7 @@
 package riccardo.U5W3D5.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import riccardo.U5W3D5.entities.Users;
 import riccardo.U5W3D5.exceptions.UnauthorizedException;
@@ -16,13 +17,16 @@ public class AuthService {
     @Autowired
     private JWTTools jwtTools;
 
+    @Autowired
+    private PasswordEncoder bcrypt;
+
     public String authenticationUserAndGenerateToken (UserLoginDTO payload){
         // 1 controllo le credenziali
         // 1.1 cerco nel db tramite l’email l’utente
         Users users = this.usersService.findByEmail(payload.email());
 
         // 1.2 verifico se la password combacia con quella ricevuta nel payload
-        if (users.getPassword().equals(payload.password())) {
+        if (bcrypt.matches(payload.password(), users.getPassword())) {
             // 2 se tutto è ok, genero un token e lo torno
             return jwtTools.createToken(users);
         } else {
