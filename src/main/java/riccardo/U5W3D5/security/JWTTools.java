@@ -12,13 +12,13 @@ import java.util.Date;
 
 @Component
 public class JWTTools {
-    @Value("${jwt_secret}")
+    @Value("${JWT_SECRET}")
     private String secret;
 
     // GENERO IL TOKEN
     public String createToken (Users users){
         return Jwts.builder().issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 + 60 + 60 * 24 * 7))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
                 .subject(String.valueOf(users.getId()))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();

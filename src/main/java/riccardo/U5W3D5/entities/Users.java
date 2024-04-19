@@ -1,5 +1,6 @@
 package riccardo.U5W3D5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,7 +43,8 @@ public class Users implements UserDetails {
             name = "users_event",
             joinColumns = @JoinColumn(name = "users_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
-    private Set<Event> eventiPrenotati = new HashSet<>();
+    @JsonIgnore
+    private Set<Event> event = new HashSet<>();
 
     public Users(String username, String name, String surname, String email, String password, Role role) {
         this.username = username;
@@ -50,7 +52,7 @@ public class Users implements UserDetails {
         this.surname = surname;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.role = Role.NORMAL_USER;
     }
 
 

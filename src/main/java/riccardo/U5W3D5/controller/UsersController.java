@@ -14,6 +14,7 @@ import riccardo.U5W3D5.exceptions.BadRequestException;
 import riccardo.U5W3D5.payloads.EventDTO;
 import riccardo.U5W3D5.payloads.UsersDTO;
 import riccardo.U5W3D5.repositories.UsersDAO;
+import riccardo.U5W3D5.services.EventService;
 import riccardo.U5W3D5.services.UsersService;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class UsersController {
     }
 
     @GetMapping ("/{userId}")
-    private Users getUserById (@PathVariable UUID userId){
+    public Users getUserById (@PathVariable UUID userId){
         return usersService.getUserById(userId);
     }
 
@@ -66,4 +67,5 @@ public class UsersController {
     public void deleteUser (@PathVariable UUID userId){
         this.usersService.deleteUser(userId);
     }
+
 }

@@ -1,10 +1,12 @@
 package riccardo.U5W3D5.services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import riccardo.U5W3D5.entities.Event;
 import riccardo.U5W3D5.entities.Users;
@@ -16,6 +18,7 @@ import riccardo.U5W3D5.repositories.EventDAO;
 import riccardo.U5W3D5.repositories.UsersDAO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,5 +55,18 @@ public class EventService {
     public void deleteEvent (UUID eventId){
         Event event = this.eventDAO.findById(eventId).orElseThrow(() -> new NotFoundException(eventId));
         this.eventDAO.delete(event);
+    }
+
+    @Transactional
+    public boolean prenotaPosto(UUID eventId) {
+        Event event = this.eventDAO.findById(eventId).orElseThrow(() -> new NotFoundException(eventId));
+        if (event != null) {
+            if (event.getNumberOfPlacesAvailable() > 0) {
+                event.setNumberOfPlacesAvailable(event.getNumberOfPlacesAvailable() - 1);
+                eventDAO.save(event);
+                return true;
+            }
+        }
+        return false;
     }
 }

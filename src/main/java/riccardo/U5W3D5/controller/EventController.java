@@ -3,6 +3,7 @@ package riccardo.U5W3D5.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +29,7 @@ public class EventController {
     }
 
     @GetMapping ("/{eventId}")
-    private Event getEventById (@PathVariable UUID eventId){
+    public Event getEventById (@PathVariable UUID eventId){
         return this.eventService.getEventById(eventId);
     }
 
@@ -57,4 +58,16 @@ public class EventController {
         this.eventService.deleteEvent(eventId);
     }
 
+    @PostMapping ("/{eventId}/prenotare")
+    @ResponseStatus (HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('NORMAL_USER')")
+    public ResponseEntity<String> reserveSeat (@PathVariable UUID eventId){
+        boolean prenotazioneRiuscita = eventService.prenotaPosto(eventId);
+        if (prenotazioneRiuscita) {
+            return ResponseEntity.ok("Prenotazione avvenuta con successo!");
+        } else {
+            return ResponseEntity.badRequest().body("Impossibile effettuare la prenotazione per questo evento. Posti esauriti.");
+        }
+
+    }
 }

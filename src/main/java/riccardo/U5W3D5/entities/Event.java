@@ -1,5 +1,6 @@
 package riccardo.U5W3D5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -34,7 +35,8 @@ public class Event {
     private int numberOfPlacesAvailable;
 
     @ManyToMany(mappedBy = "event")
-    private Set<Users> partecipanti = new HashSet<>();
+    @JsonIgnore
+    private Set<Users> users = new HashSet<>();
 
     public Event(String title, String description, LocalDate date, String place, int numberOfPlacesAvailable) {
         this.title = title;
