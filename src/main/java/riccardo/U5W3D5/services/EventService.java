@@ -57,6 +57,7 @@ public class EventService {
         this.eventDAO.delete(event);
     }
 
+    @Transactional
     public boolean prenotaPosto(UUID eventId) {
         Event event = this.eventDAO.findById(eventId).orElseThrow(() -> new NotFoundException(eventId));
         if (event != null) {
