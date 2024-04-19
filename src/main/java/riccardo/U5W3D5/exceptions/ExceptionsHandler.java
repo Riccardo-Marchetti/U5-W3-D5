@@ -1,5 +1,6 @@
 package riccardo.U5W3D5.exceptions;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,6 +9,7 @@ import riccardo.U5W3D5.payloads.ErrorsDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ExceptionsHandler {
@@ -15,6 +17,10 @@ public class ExceptionsHandler {
     @ExceptionHandler
     @ResponseStatus (HttpStatus.BAD_REQUEST)
     public ErrorsDTO handleBadRequest (BadRequestException ex){
+        if (ex.getErrorList() != null) {
+            String message = ex.getErrorList().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining(". "));
+            return new ErrorsDTO(message, LocalDateTime.now());
+        }
         return new ErrorsDTO(ex.getMessage(), LocalDateTime.now());
     }
 

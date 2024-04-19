@@ -3,9 +3,12 @@ package riccardo.U5W3D5.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import riccardo.U5W3D5.entities.Event;
 import riccardo.U5W3D5.entities.Users;
+import riccardo.U5W3D5.exceptions.BadRequestException;
 import riccardo.U5W3D5.payloads.EventDTO;
 import riccardo.U5W3D5.payloads.UsersDTO;
 import riccardo.U5W3D5.repositories.UsersDAO;
@@ -32,12 +35,18 @@ public class UsersController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private Users saveUser (@RequestBody UsersDTO body){
+    private Users saveUser (@RequestBody @Validated UsersDTO body, BindingResult validation){
+        if (validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }
         return usersService.saveUser(body);
     }
 
     @PutMapping ("/{userId}")
-    private Users findUserAndUpdate (@PathVariable UUID userId, @RequestBody UsersDTO body ){
+    private Users findUserAndUpdate (@PathVariable UUID userId, @RequestBody @Validated UsersDTO body, BindingResult validation ){
+        if (validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }
         return usersService.findUserAndUpdate(body, userId);
     }
     @DeleteMapping ("/{userId}")

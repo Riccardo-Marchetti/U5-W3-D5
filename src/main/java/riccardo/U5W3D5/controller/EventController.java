@@ -3,8 +3,11 @@ package riccardo.U5W3D5.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import riccardo.U5W3D5.entities.Event;
+import riccardo.U5W3D5.exceptions.BadRequestException;
 import riccardo.U5W3D5.payloads.EventDTO;
 import riccardo.U5W3D5.services.EventService;
 
@@ -30,12 +33,18 @@ public class EventController {
 
     @PostMapping
     @ResponseStatus (HttpStatus.CREATED)
-    private Event saveEvent (@RequestBody EventDTO body){
+    private Event saveEvent (@RequestBody @Validated EventDTO body, BindingResult validation){
+        if (validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }
         return this.eventService.saveEvent(body);
     }
 
     @PutMapping ("/{eventId}")
-    private Event findEventAndUpdate (@PathVariable UUID eventId, @RequestBody EventDTO body ){
+    private Event findEventAndUpdate (@PathVariable UUID eventId, @RequestBody @Validated EventDTO body, BindingResult validation ){
+        if (validation.hasErrors()){
+            throw new BadRequestException(validation.getAllErrors());
+        }
         return this.eventService.findEventAndUpdate(body, eventId);
     }
     @DeleteMapping ("/{eventId}")
