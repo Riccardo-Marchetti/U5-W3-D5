@@ -33,14 +33,14 @@ public class UsersController {
         return usersService.getUserById(userId);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    private Users saveUser (@RequestBody @Validated UsersDTO body, BindingResult validation){
-        if (validation.hasErrors()){
-            throw new BadRequestException(validation.getAllErrors());
-        }
-        return usersService.saveUser(body);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    private Users saveUser (@RequestBody @Validated UsersDTO body, BindingResult validation){
+//        if (validation.hasErrors()){
+//            throw new BadRequestException(validation.getAllErrors());
+//        }
+//        return usersService.saveUser(body);
+//    }
 
     @PutMapping ("/{userId}")
     private Users findUserAndUpdate (@PathVariable UUID userId, @RequestBody @Validated UsersDTO body, BindingResult validation ){
