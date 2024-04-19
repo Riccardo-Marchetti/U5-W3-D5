@@ -1,6 +1,7 @@
 package riccardo.U5W3D5.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import riccardo.U5W3D5.entities.Event;
@@ -18,8 +19,8 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    private List<Event> getAllEvent (){
-        return this.eventService.getAllEvent();
+    private Page<Event> getAllEvent (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
+        return this.eventService.getAllEvent(page, size, sortBy);
     }
 
     @GetMapping ("/{eventId}")

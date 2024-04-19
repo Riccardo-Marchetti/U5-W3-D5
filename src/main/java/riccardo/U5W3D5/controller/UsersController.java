@@ -1,6 +1,7 @@
 package riccardo.U5W3D5.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import riccardo.U5W3D5.entities.Event;
@@ -20,8 +21,8 @@ public class UsersController {
     private UsersService usersService;
 
     @GetMapping
-    private List<Users> getAllUser (){
-        return usersService.getAllUser();
+    private Page<Users> getAllUser (@RequestParam (defaultValue = "0") int page, @RequestParam (defaultValue = "10") int size, @RequestParam (defaultValue = "username") String sortBy){
+        return usersService.getAllUser(page, size, sortBy);
     }
 
     @GetMapping ("/{userId}")

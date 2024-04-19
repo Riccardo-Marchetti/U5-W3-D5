@@ -1,6 +1,10 @@
 package riccardo.U5W3D5.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import riccardo.U5W3D5.entities.Users;
 import riccardo.U5W3D5.exceptions.BadRequestException;
@@ -17,8 +21,10 @@ public class UsersService {
     @Autowired
     private UsersDAO usersDAO;
 
-    public List<Users> getAllUser (){
-        return usersDAO.findAll();
+    public Page<Users> getAllUser (int page, int size, String sortBy){
+        if (size > 50) size = 50;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return usersDAO.findAll(pageable);
     }
 
     public Users getUserById (UUID userId){
